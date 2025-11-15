@@ -1,0 +1,42 @@
+# ===== API CONFIGURATION FILES - CONTAINS SENSITIVE KEYS =====
+# DO NOT COMMIT config.js - It contains your API keys!
+config.js
+.env
+.env.local
+.env.*.local
+*.key
+*_keys.txt
+*_keys.json
+
+# Build files (generated during Netlify build)
+# Keep build-config.js in repo (it's safe - uses env vars)
+
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE Files
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node modules (if you add npm packages later)
+node_modules/
+
+# Build files
+dist/
+build/
+
+# Cache
+.cache/
+*.cache
+

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart City Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Google Maps API with Places library for autocomplete -->
+    <!-- API key is loaded dynamically from script.js -->
+    <script id="google-maps-script" async defer></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <h1>Smart City Dashboard</h1>
+        </div>
+        <div class="search-container">
+            <input type="text" id="citySearch" placeholder="Search city (e.g., New York, London, Delhi)" class="search-input">
+            <button onclick="searchCity()" class="search-btn">Search</button>
+        </div>
+        <div class="nav-info">
+            <span id="currentTime">Loading...</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <h3>Dashboard Menu</h3>
+            <ul class="menu-list">
+                <li class="menu-item active" onclick="showSection('dashboard')">
+                    <span class="icon"></span>
+                    <span>Dashboard</span>
+                </li>
+                <li class="menu-item" onclick="showSection('charts')">
+                    <span class="icon"></span>
+                    <span>Charts</span>
+                </li>
+                <li class="menu-item" onclick="showSection('map')">
+                    <span class="icon"></span>
+                    <span>Map View</span>
+                </li>
+                <li class="menu-item" onclick="showSection('data')">
+                    <span class="icon"></span>
+                    <span>Raw Data</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2>City Overview</h2>
+                    <p class="subtitle">Real-time data for <span id="selectedCity">--</span></p>
+                </div>
+
+                <!-- AI City Description -->
+                <div class="card city-description-card">
+                    <h3> AI City Insights</h3>
+                    <div id="cityDescription" class="city-description">
+                        <p class="loading-text">Search for a city to get AI-powered insights about living, working, and studying there!</p>
+                    </div>
+                </div>
+
+                <!-- Weather Card -->
+                <div class="card-grid">
+                    <div class="card weather-card">
+                        <h3> Current Weather</h3>
+                        <div class="weather-info">
+                            <div class="temp-display">
+                                <span id="temperature" class="big-number">--</span>
+                                <span class="unit">°C</span>
+                            </div>
+                            <div class="weather-details">
+                                <p id="weatherDesc">Loading...</p>
+                                <p>Feels like: <span id="feelsLike">--</span>°C</p>
+                                <p>Last updated: <span id="lastUpdate">--</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Air Quality Card -->
+                    <div class="card">
+                        <h3>Air Quality Index</h3>
+                        <div class="aqi-display">
+                            <div id="aqiValue" class="big-number aqi-good">--</div>
+                            <p id="aqiStatus" class="status-text">Loading...</p>
+                        </div>
+                        <div class="info-text">
+                            <small>Good: 0-50 | Moderate: 51-100 | Unhealthy: 101+</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Info Cards -->
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-icon"></div>
+                        <div class="info-content">
+                            <h4>Wind Speed</h4>
+                            <p id="windSpeed" class="info-value">-- km/h</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon"></div>
+                        <div class="info-content">
+                            <h4>Humidity</h4>
+                            <p id="humidity" class="info-value">--%</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon"></div>
+                        <div class="info-content">
+                            <h4>Visibility</h4>
+                            <p id="visibility" class="info-value">-- km</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon"></div>
+                        <div class="info-content">
+                            <h4>Pressure</h4>
+                            <p id="pressure" class="info-value">-- hPa</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sun Information -->
+                <div class="card">
+                    <h3>Sun Information</h3>
+                    <div class="sun-moon-grid">
+                        <div class="sun-moon-item">
+                            <span class="sm-icon"></span>
+                            <div>
+                                <p class="sm-label">Sunrise</p>
+                                <p id="sunrise" class="sm-value">--:--</p>
+                            </div>
+                        </div>
+                        <div class="sun-moon-item">
+                            <span class="sm-icon"></span>
+                            <div>
+                                <p class="sm-label">Sunset</p>
+                                <p id="sunset" class="sm-value">--:--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section id="charts" class="content-section">
+                <div class="section-header">
+                    <h2>Data Visualization</h2>
+                    <p class="subtitle">Charts and graphs for better insights</p>
+                </div>
+
+                <div class="card">
+                    <h3> Temperature Overview</h3>
+                    <canvas id="tempChart"></canvas>
+                    <p class="chart-note">Real-time temperature data from API</p>
+                </div>
+
+                <div class="card">
+                    <h3> Air Quality Breakdown</h3>
+                    <canvas id="aqiChart"></canvas>
+                    <p class="chart-note">Pollutant levels from Google Air Quality API</p>
+                </div>
+
+                <div class="card">
+                    <h3> Weather Metrics</h3>
+                    <canvas id="weatherChart"></canvas>
+                    <p class="chart-note">Current weather conditions from API</p>
+                </div>
+            </section>
+
+            <!-- Map Section -->
+            <section id="map" class="content-section">
+                <div class="section-header">
+                    <h2>City Map View</h2>
+                    <p class="subtitle">Interactive map with data points</p>
+                </div>
+
+                <div class="card map-card">
+                    <div id="mapContainer" class="map-placeholder"></div>
+                </div>
+
+                <div class="card">
+                    <h3> Location Details</h3>
+                    <div class="location-info">
+                        <p><strong>City:</strong> <span id="mapCity">--</span></p>
+                        <p><strong>Coordinates:</strong> <span id="coordinates">--, --</span></p>
+                        <p><strong>Timezone:</strong> <span id="timezone">--</span></p>
+                        <p><strong>Location:</strong> <span id="population">--</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Raw Data Section -->
+            <section id="data" class="content-section">
+                <div class="section-header">
+                    <h2>Raw Data</h2>
+                    <p class="subtitle">View complete API response data</p>
+                </div>
+
+                <div class="card">
+                    <h3> Weather API Data</h3>
+                    <div class="data-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Value</th>
+                                    <th>Unit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="weatherDataTable">
+                                <tr>
+                                    <td colspan="3" class="no-data">Search for a city to see data</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Air Quality API Data</h3>
+                    <div class="data-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pollutant</th>
+                                    <th>Value</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="aqiDataTable">
+                                <tr>
+                                    <td colspan="3" class="no-data">Search for a city to see data</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>API Response (JSON)</h3>
+                    <div class="json-container">
+                        <pre id="jsonData">No data loaded yet. Search for a city to fetch data.</pre>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Smart City Dashboard , Built with HTML, CSS & JavaScript , Data from Open APIs</p>
+    </footer>
+
+    <!-- Load API configuration first (contains sensitive keys) -->
+    <script src="config.js"></script>
+    <!-- Load main script after config -->
+    <script src="script.js"></script>
+    <script>
+        // Initialize dashboard when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>
+
