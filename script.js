@@ -1136,7 +1136,7 @@ Write in an enthusiastic, informative tone. Be specific and practical. Make it e
                     
                     descriptionElement.innerHTML = formattedText;
                     console.log(`✅ AI description generated successfully in ${duration}ms using ${apiVersion}/${model}`);
-                    return; // Success! Exit the function
+                return; // Success! Exit the function
                     
         } else {
                     // This combination didn't work, try next one
